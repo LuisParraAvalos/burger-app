@@ -14,10 +14,7 @@ const authFailed = (error) => {
 }
 
 export const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('expirationDate');
-    return { type: actions.AUTH_LOGOUT };
+    return { type: actions.AUTH_INIT_LOGOUT };
 }
 
 const authLogout = (expTime) => {
