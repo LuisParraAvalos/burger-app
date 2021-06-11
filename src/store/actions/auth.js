@@ -17,12 +17,12 @@ export const logout = () => {
     return { type: actions.AUTH_INIT_LOGOUT };
 }
 
+export const logoutSucceed = () => {
+    return { type: actions.AUTH_LOGOUT } ;
+}
+
 const authLogout = (expTime) => {
-    return dispatch => {
-        setTimeout(() => {
-            dispatch(logout());
-        }, expTime * 1000);
-    };
+    return { type: actions.AUTH_TIMEOUT_LOGOUT, expTime: expTime };
 }
 
 export const checkAuthState = () => {

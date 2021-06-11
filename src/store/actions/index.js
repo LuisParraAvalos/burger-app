@@ -15,5 +15,6 @@ export {
 export {
     auth,
     logout,
+    logoutSucceed,
     checkAuthState
 } from './auth'
