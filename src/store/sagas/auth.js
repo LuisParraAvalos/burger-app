@@ -15,20 +15,36 @@ export function* timeoutLogout(action) {
     yield put(actions.logout());
 }
 
-export function* checkAuthState(action) {
-    
+export function* checkAuthState(action) {   
+    const token = localStorage.getItem('token');
+    if (!token) {
+        yield put(actions.logout());
+    }
+    else {
+        const expDate = localStorage.getItem('expirationDate');
+        const expirationDate = new Date(expDate);
+        if (expirationDate <= new Date()) {
+            yield put(actions.logout());
+        }
+        else{
+            const localId = localStorage.getItem('userId');
+            const expiresIn = (expirationDate.getTime() - new Date().getTime()) / 1000;
+            yield put(actions.authSucceed(token, localId));
+            yield put(actions.authLogout(expiresIn));
+        }
+    }
 }
 
 export function* authUser(action) {
     let url;
+    yield put(actions.authStart());
+
     if (action.isSignUp) {
         url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAPGR1JCFIiVdzlOQMStkEl4QEwDeWG7eM';
     }
     else {
         url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAPGR1JCFIiVdzlOQMStkEl4QEwDeWG7eM';
     }
-    
-    yield actions.authStart();
     try {
         const response = yield axios.post(url, {
              email: action.email, password: action.password, returnSecureToken: true });
