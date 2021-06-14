@@ -1,5 +1,4 @@
 import actionTypes from "./actionTypes";
-import axios from '../../axios-orders';
 
 export const addIngredient = (ingredient) => {
     return { type: actionTypes.ADD_INGREDIENT, ingredient: ingredient };
@@ -17,7 +16,7 @@ export const removeIngredients = (ingredients, total) => {
     return { type: actionTypes.REMOVE_INGREDIENTS, ingredients: ingredients, total: total };
 }
 
-const setIngredients = (ingredients) => {
+export const setIngredients = (ingredients) => {
     return { type: actionTypes.SETUP_INGREDIENTS, ingredients: ingredients };
 }
 
@@ -30,20 +29,7 @@ export const clearOrder = () => {
 }
 
 export const setupIngredients = () => {
-    return dispatch => {
-        axios.get('/ingredients.json')
-        .then(response => {
-            if (response.data) {
-                dispatch(setIngredients(response.data));
-            }
-            else {
-                dispatch(setIngredientsFailed({ error: 'No data' }));
-            }
-        })
-        .catch(error => {
-            dispatch(setIngredientsFailed({ error: error }));
-        });
-    };
+    return { type: actionTypes.INIT_SETUP_INGREDIENTS };
 }
 
 export const setRedirectPath = (path) => {

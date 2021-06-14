@@ -12,7 +12,7 @@ import thunk from 'redux-thunk';
 
 // Saga imports
 import createSagaMiddleware from 'redux-saga'
-import { watchAuth } from './store/sagas';
+import { watchAuth, watchOrders, watchIngredients } from './store/sagas';
 
 const logger = store => {
   return next => {
@@ -42,6 +42,8 @@ const store = createStore(rootReducer, composeEnhancers(
 ));
 
 sagaMiddleware.run(watchAuth);
+sagaMiddleware.run(watchOrders);
+sagaMiddleware.run(watchIngredients);
 
 ReactDOM.render(
   <Provider store={store}>

@@ -4,13 +4,21 @@ export {
     removeIngredient,
     removeIngredients,
     setupIngredients,
+    setIngredients,
+    setIngredientsFailed,
     clearOrder,
     setRedirectPath
 } from './ingredients'
 export {
     postOrder,
     purchaseInit,
-    getOrders
+    getOrders,
+    submitOrder,
+    submitOrderSucceed,
+    submitOrderFailed,
+    fetchOrders,
+    fetchOrdersSucceed,
+    fetchOrdersFailed
 } from './orders'
 export {
     auth,
