@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Layout from './hoc/Layout/Layout';
 import BurgerBuilder from './containers/BurgerBuilder/BurgerBuilder';
@@ -12,41 +12,40 @@ const asyncOrders = asyncComponent(() => import('./containers/Orders/Orders'));
 const asyncLogout = asyncComponent(() => import('./containers/Auth/Logout/Logout'));
 const asyncAuth = asyncComponent(() => import('./containers/Auth/Auth'));
 
-class App extends React.Component {
+const App = (props) => {
 
-  componentDidMount() {
-    this.props.checkAuthState();
-  }
+  useEffect(() => {
+    props.checkAuthState();
+    return () => { /* cleanup */ }
+  }, []);
 
-  render() {
-    let routes = (
+  let routes = (
+    <Switch>
+      <Route path='/auth' component={asyncAuth} />
+      <Route path='/' component={BurgerBuilder} />
+      <Redirect to="/" />
+    </Switch>
+  );
+  if (props.isAuth) {
+    routes = (
       <Switch>
+        <Route path='/checkout' component={asyncCheckout} />
+        <Route path='/orders' component={asyncOrders} />
+        <Route path='/logout' component={asyncLogout} />
         <Route path='/auth' component={asyncAuth} />
         <Route path='/' component={BurgerBuilder} />
         <Redirect to="/" />
       </Switch>
     );
-    if (this.props.isAuth) {
-      routes = (
-        <Switch>
-          <Route path='/checkout' component={asyncCheckout} />
-          <Route path='/orders' component={asyncOrders} />
-          <Route path='/logout' component={asyncLogout} />
-          <Route path='/auth' component={asyncAuth} />
-          <Route path='/' component={BurgerBuilder} />
-          <Redirect to="/" />
-        </Switch>
-      );
-    }
-
-    return (
-      <BrowserRouter>
-        <Layout>
-          {routes}
-        </Layout>
-      </BrowserRouter>
-    );
   }
+
+  return (
+    <BrowserRouter>
+      <Layout>
+        {routes}
+      </Layout>
+    </BrowserRouter>
+  );
 };
 
 const mapStateToProps = state => {
