@@ -1,16 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 
 import Layout from './hoc/Layout/Layout';
 import BurgerBuilder from './containers/BurgerBuilder/BurgerBuilder';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import * as actions from './store/actions/index';
 import { connect } from 'react-redux';
-import asyncComponent from './hoc/asyncComponent';
 
-const asyncCheckout = asyncComponent(() => import('./containers/Checkout/Checkout'));
-const asyncOrders = asyncComponent(() => import('./containers/Orders/Orders'));
-const asyncLogout = asyncComponent(() => import('./containers/Auth/Logout/Logout'));
-const asyncAuth = asyncComponent(() => import('./containers/Auth/Auth'));
+const Checkout = lazy(() => import('./containers/Checkout/Checkout'));
+const Orders = lazy(() => import('./containers/Orders/Orders'));
+const Logout = lazy(() => import('./containers/Auth/Logout/Logout'));
+const Auth = lazy(() => import('./containers/Auth/Auth'));
 
 const App = (props) => {
 
@@ -21,7 +20,7 @@ const App = (props) => {
 
   let routes = (
     <Switch>
-      <Route path='/auth' component={asyncAuth} />
+      <Route path='/auth' component={Auth} />
       <Route path='/' component={BurgerBuilder} />
       <Redirect to="/" />
     </Switch>
@@ -29,10 +28,10 @@ const App = (props) => {
   if (props.isAuth) {
     routes = (
       <Switch>
-        <Route path='/checkout' component={asyncCheckout} />
-        <Route path='/orders' component={asyncOrders} />
-        <Route path='/logout' component={asyncLogout} />
-        <Route path='/auth' component={asyncAuth} />
+        <Route path='/checkout' component={Checkout} />
+        <Route path='/orders' component={Orders} />
+        <Route path='/logout' component={Logout} />
+        <Route path='/auth' component={Auth} />
         <Route path='/' component={BurgerBuilder} />
         <Redirect to="/" />
       </Switch>
@@ -42,7 +41,9 @@ const App = (props) => {
   return (
     <BrowserRouter>
       <Layout>
-        {routes}
+        <Suspense fallback={<p>Loading...</p>}>
+          {routes}
+        </Suspense>
       </Layout>
     </BrowserRouter>
   );
