@@ -13,7 +13,7 @@ import * as actionCreator from '../../store/actions/index';
 
 
 export const BurgerBuilder  = (props) => {
-
+  const {setupIngredients} = props;
   const [checkingOut, setCheckingOut] = useState(false);
 
   const checkOutHandler = () => {
@@ -29,9 +29,9 @@ export const BurgerBuilder  = (props) => {
 
   useEffect(() => {
     if (!props.buildingBurger && props.redirectPath === '/') {
-      props.setupIngredients();
+      setupIngredients();
     }
-  }, []);
+  }, [props.buildingBurger, props.redirectPath, setupIngredients]);
 
   const checkOutCanceledHandler = () => {
     setCheckingOut(false);

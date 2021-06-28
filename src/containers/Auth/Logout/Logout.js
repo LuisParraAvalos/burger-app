@@ -5,10 +5,12 @@ import * as actions from '../../../store/actions/index';
 
 const Logout = (props) => {
 
+    const {clearOrder, onLogout} = props;
+
     useEffect(() => {
-        props.clearOrder();
-        props.onLogout();        
-    }, []);
+        clearOrder();
+        onLogout();        
+    }, [clearOrder, onLogout]);
 
     return <Redirect to="/" />
 };

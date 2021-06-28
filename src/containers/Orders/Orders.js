@@ -8,9 +8,11 @@ import * as actions from '../../store/actions/index';
 
 const Orders  = (props) => {
 
+  const { onGetOrders } = props;
+
   useEffect(() => {
-    props.onGetOrders(props.token, props.userId);
-  }, []);
+    onGetOrders(props.token, props.userId);
+  }, [onGetOrders, props.token, props.userId]);
 
   let order = props.loading ? <Spinner /> : <h2 style={{ textAlign: 'center' }}>No Orders yet!</h2>;
   if (props.error) {

@@ -11,6 +11,7 @@ import { Redirect } from "react-router";
 import { updateState, validate } from '../../shared/utility';
 
 const Auth = (props) => {
+    const {setRedirectPath} = props;
 
     const [form, setForm] = useState({
         email: {
@@ -50,9 +51,9 @@ const Auth = (props) => {
 
     useEffect(() => {
         if (!props.buildingBurger && props.redirectPath !== '/') {
-            props.setRedirectPath('/');
+            setRedirectPath('/');
         }
-    }, []);
+    }, [props.buildingBurger, props.redirectPath, setRedirectPath]);
 
 
     const handleSubmit = (event) => {
