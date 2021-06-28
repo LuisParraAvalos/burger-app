@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import axios from '../../axios-orders';
 
@@ -12,81 +12,76 @@ import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import * as actionCreator from '../../store/actions/index';
 
 
-export class BurgerBuilder extends React.Component {
-  state = {
-    checkingOut: false
-  };
+export const BurgerBuilder  = (props) => {
 
-  checkOutHandler = () => {
-    if (this.props.isAuth) {
-      this.setState((prevState, _) => ({ checkingOut: true }));
+  const [checkingOut, setCheckingOut] = useState(false);
+
+  const checkOutHandler = () => {
+    if (props.isAuth) {
+      setCheckingOut(true);
     }
     else {
-      this.props.purchaseInit();
-      this.props.setRedirectPath('/checkout');
-      this.props.history.push('/auth');
+      props.purchaseInit();
+      props.setRedirectPath('/checkout');
+      props.history.push('/auth');
     }
   }
 
-  componentDidMount() {
-    // console.log("componentDidMount");
-    if (!this.props.buildingBurger && this.props.redirectPath === '/') {
-      this.props.setupIngredients();
+  useEffect(() => {
+    if (!props.buildingBurger && props.redirectPath === '/') {
+      props.setupIngredients();
     }
+  }, []);
+
+  const checkOutCanceledHandler = () => {
+    setCheckingOut(false);
   }
 
-  checkOutCCanceledHandler = () => {
-    this.setState(() => ({ checkingOut: false }));
+  const checkout = () => {
+    props.purchaseInit();
+    props.history.push('/checkout');
   }
 
-  checkout = () => {
-    this.props.purchaseInit();
-    this.props.history.push('/checkout');
+  
+  const ingredientsDisabled = { ...props.ingrs };
+
+  for (const ingredient in ingredientsDisabled) {
+    ingredientsDisabled[ingredient] = ingredientsDisabled[ingredient] <= 0;
   }
 
-  render = () => {
-    const ingredientsDisabled = { ...this.props.ingrs };
+  let orderSummary = null;
+  let burger = props.error ? <p style={{ textAlign: 'center' }}>Ingredients can't be loaded!</p> : <Spinner />;
 
-    for (const ingredient in ingredientsDisabled) {
-      ingredientsDisabled[ingredient] = ingredientsDisabled[ingredient] <= 0;
-    }
-    let orderSummary = null;
-    let burger = this.props.error ? <p style={{ textAlign: 'center' }}>Ingredients can't be loaded!</p> : <Spinner />;
-
-    if (this.props.ingrs) {
-      burger = (
-        <Auxiliary>
-          <Burger ingredients={this.props.ingrs} />
-          <BuildControls
-            isAuth={this.props.isAuth}
-            checkingOut={this.checkOutHandler}
-            price={this.props.total.toFixed(2)}
-            disabled={ingredientsDisabled}
-            addIngredient={event => this.props.addIngredient(event.currentTarget.value)}
-            removeIngredient={event => this.props.removeIngredient(event.currentTarget.value)} />
-        </Auxiliary>
-      );
-      orderSummary = <OrderSummary
-        ingredients={this.props.ingrs}
-        checkoutCancelled={this.checkOutCCanceledHandler}
-        checkout={this.checkout}
-        price={this.props.total.toFixed(2)} />
-    }
-    // Removed since we pass axios to redux async actions
-    // if (this.state.loading) {
-    //   orderSummary = <Spinner />;
-    // }
-
-    return (
+  if (props.ingrs) {
+    burger = (
       <Auxiliary>
-        <Modal show={this.state.checkingOut} clicked={this.checkOutCCanceledHandler}>
-          {orderSummary}
-        </Modal>
-        {burger}
+        <Burger ingredients={props.ingrs} />
+        <BuildControls
+          isAuth={props.isAuth}
+          checkingOut={checkOutHandler}
+          price={props.total.toFixed(2)}
+          disabled={ingredientsDisabled}
+          addIngredient={event => props.addIngredient(event.currentTarget.value)}
+          removeIngredient={event => props.removeIngredient(event.currentTarget.value)} />
       </Auxiliary>
     );
+
+    orderSummary = <OrderSummary
+      ingredients={props.ingrs}
+      checkoutCancelled={checkOutCanceledHandler}
+      checkout={checkout}
+      price={props.total.toFixed(2)} />
   }
-}
+
+  return (
+    <Auxiliary>
+      <Modal show={checkingOut} clicked={checkOutCanceledHandler}>
+        {orderSummary}
+      </Modal>
+      {burger}
+    </Auxiliary>
+  );
+};
 
 const mapStateToProps = state => {
   return {
