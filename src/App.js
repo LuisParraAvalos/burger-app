@@ -13,10 +13,11 @@ const Auth = lazy(() => import('./containers/Auth/Auth'));
 
 const App = (props) => {
 
+  const {checkAuthState} = props;
   useEffect(() => {
-    props.checkAuthState();
+    checkAuthState();
     return () => { /* cleanup */ }
-  }, []);
+  }, [checkAuthState]);
 
   let routes = (
     <Switch>

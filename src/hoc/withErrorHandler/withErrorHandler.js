@@ -1,35 +1,13 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Modal from '../../components/UI/Modal/Modal';
 import Auxiliary from '../Auxiliary/Auxiliary';
+import httpErrorHandler from '../../hooks/http-error-handler';
 
 const withErrorHandler = (WrappedComponent, axios) => {
     return ((props) => {
-        const [error, setError] = useState(null);
-
-        const dismissModal = () => setError(null);
-
-        const reqInterceptor = axios.interceptors.request.use(req => {
-            setError(null);
-            return req;
-        }, err => {
-            setError(err);
-            return Promise.reject(err);
-        });
-
-        const resInterceptor = axios.interceptors.response.use(res => { return res; }, err => {
-            setError(err);
-            return Promise.reject(err);
-        });
-
-        useEffect(() => {
-            //Only clear interceptor on Cleanup options
-            return () => {
-                axios.interceptors.request.eject(reqInterceptor);
-                axios.interceptors.response.eject(resInterceptor);
-            };
-        }, [reqInterceptor, resInterceptor]);
-
+        
+        const [error, dismissModal] = httpErrorHandler(axios); 
         
         // console.log("Error HOC: " + state.error);
         return (
