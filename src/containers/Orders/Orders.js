@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Order from '../../components/Order/Order';
 import axios from '../../axios-orders';
 import Spinner from '../../components/UI/Spinner/Spinner';
@@ -6,29 +6,27 @@ import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/index';
 
-class Orders extends React.Component {
+const Orders  = (props) => {
 
-  componentDidMount() {
-    this.props.onGetOrders(this.props.token, this.props.userId);
+  useEffect(() => {
+    props.onGetOrders(props.token, props.userId);
+  }, []);
+
+  let order = props.loading ? <Spinner /> : <h2 style={{ textAlign: 'center' }}>No Orders yet!</h2>;
+  if (props.error) {
+    order = <h2  style={{ textAlign: 'center' }}>Error Occured!</h2>;
   }
 
-  render() {
-    let order = this.props.loading ? <Spinner /> : <h2 style={{ textAlign: 'center' }}>No Orders yet!</h2>;
-    if (this.props.error) {
-      order = <h2  style={{ textAlign: 'center' }}>Error Occured!</h2>;
-    }
-
-    if (this.props.orders && this.props.orders.length > 0) {
-      order = this.props.orders.map(order =>
-        <Order key={order.id} ingredients={order.ingredients} price={order.price} />);
-    }
-
-    return (
-      <div>
-        {order}
-      </div>
-    );
+  if (props.orders && props.orders.length > 0) {
+    order = props.orders.map(order =>
+      <Order key={order.id} ingredients={order.ingredients} price={order.price} />);
   }
+
+  return (
+    <div>
+      {order}
+    </div>
+  );
 };
 
 const mapStateToProps = state => {

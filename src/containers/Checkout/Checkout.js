@@ -5,57 +5,32 @@ import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSumm
 import * as actions from '../../store/actions/index';
 import ContactData from './ContactData/ContactData';
 
-class Checkout extends React.Component {
+const Checkout = (props) => {
 
-  componentDidMount() {
-    // this.parseIngredients();
+  const onCancelHandler = () => {
+    props.clearOrder();
+    props.history.replace('/');
   }
 
-  // Not necessary after Redux
-  // parseIngredients = () => {
-  //   const query = new URLSearchParams(this.props.location.search);
-  //   const ingredients = {};
-  //   // const ingredients = Object.fromEntries(query);
-  //   let totalPrice = 0;
-  //   for (const param of query) {
-  //     if (param[0] === 'price') {
-  //       totalPrice = +param[1];
-  //     }
-  //     else {
-  //       ingredients[param[0]] = +param[1];
-  //     }
-  //   }
-  //   console.log(ingredients);
-  //   console.log(totalPrice);
-  //   this.setState({ ingredients: ingredients, totalPrice: totalPrice });
-  // }
-
-  onCancelHandler = () => {
-    this.props.clearOrder();
-    this.props.history.replace('/');
+  const onSuccessHandler = () => {
+    props.history.push(props.match.url + "/contact-data");
   }
 
-  onSuccessHandler = () => {
-    this.props.history.push(this.props.match.url + "/contact-data");
+  let summary = <Redirect to="/" />;
+  if (props.ingredients) {
+    const purchasing = props.purchasing ? null : <Redirect to="/" />
+    summary = (
+      <div>
+        {purchasing}
+        <CheckoutSummary
+          onCancelHandler={onCancelHandler}
+          onSuccessHandler={onSuccessHandler} />
+        <Route path={props.match.url + "/contact-data"} component={ContactData} />
+      </div>
+    );
   }
 
-  render() {
-    let summary = <Redirect to="/" />;
-    if (this.props.ingredients) {
-      const purchasing = this.props.purchasing ? null : <Redirect to="/" />
-      summary = (
-        <div>
-          {purchasing}
-          <CheckoutSummary
-            onCancelHandler={this.onCancelHandler}
-            onSuccessHandler={this.onSuccessHandler} />
-          <Route path={this.props.match.url + "/contact-data"} component={ContactData} />
-        </div>
-      );
-    }
-
-    return summary;
-  }
+  return summary;
 }
 
 const mapStateToProps = state => {
